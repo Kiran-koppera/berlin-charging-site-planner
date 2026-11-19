@@ -81,3 +81,19 @@ def test_auc():
     assert sites.auc([4, 3, 2, 1], [0, 0, 1, 1]) == 0.0
     assert sites.auc([1, 1, 1, 1], [0, 1, 0, 1]) == 0.5
     assert np.isnan(sites.auc([1, 2], [0, 0]))
+
+
+def test_reads_official_population_layout(tmp_path):
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    wb.active.title = "Titel"
+    ws = wb.create_sheet("T2")
+    ws.append(["2  Einwohnerinnen und Einwohner in Berlin am 30. Juni 2026 nach LOR-Planungsräumen"])
+    ws.append([None, None, None, None, "Mitte"])
+    ws.append(["01", "10", "01", "01", 3531, 132])
+    ws.append(["01", "10", "01", "02", 2091, 91])
+    ws.append([None, None, None, None, 5622])  # district total row
+    wb.save(tmp_path / "p.xlsx")
+    pop = areas.read_population(tmp_path / "p.xlsx")
+    assert pop.to_dict("records") == [{"plr_id": "01100101", "residents": 3531}, {"plr_id": "01100102", "residents": 2091}]

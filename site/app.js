@@ -46,8 +46,9 @@
       ${best.map((r) => `${esc(r.name || r.poi_label)} (${esc(r.district)})`).join(", ")}.</p></div>
     <div><h3>How much</h3><b>${fmt(base.points_per_year_needed)} points a year</b><p>About ${fmt(base.bev[2030])} BEVs by 2030 need ~${fmt(base.points[2030])} public points,
       against ${fmt(F.recent_build_pace)} added per year in 2024–25. Every scenario needs a faster build-out.</p></div>
-    <div><h3>Is it worth it</h3><b>${B.sites_positive} of ${B.sites} sites clear 8 %</b><p>A typical site needs ${fmt(B.scenarios.Base.breakeven_mult * 100)} % of base-case
-      utilisation to earn the hurdle rate, so location quality decides the investment.</p></div>`;
+    <div><h3>Is it worth it</h3><b>${B.sites_positive} of ${B.sites} sites clear 8 %</b><p>${B.scenarios.Base.breakeven_mult < 1
+      ? `At today's median ad-hoc price a typical site breaks even at ${fmt(B.scenarios.Base.breakeven_mult * 100)} % of base-case utilisation; price and location decide the rest.`
+      : `A typical site needs ${fmt(B.scenarios.Base.breakeven_mult * 100)} % of base-case utilisation to earn the hurdle rate, so location quality decides the investment.`}</p></div>`;
 
   // map
   const map = L.map("leaflet", { preferCanvas: true, scrollWheelZoom: false, zoomSnap: 0.5 }).setView([52.515, 13.40], 10.5);

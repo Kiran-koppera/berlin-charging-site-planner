@@ -75,7 +75,7 @@ def raw_dir(tmp_path):
         ws.append(["header"])
     ws.append(["01100101", "West", 20000])
     ws.append(["02200202", "East", 10000])
-    wb.save(raw / "mss2025_plr.xlsx")
+    wb.save(raw / "population_plr.xlsx")
     roads = [
         {"type": "Feature", "geometry": {"type": "LineString", "coordinates": [[13.38, 52.51], [13.42, 52.51]]},
          "properties": {"str_name": "Hauptstraße", "strklasse": "I", "dtvw_kfz": 40000}},
@@ -99,7 +99,7 @@ def raw_dir(tmp_path):
 
 @pytest.fixture
 def geo(raw_dir):
-    return areas.load_planning_areas(raw_dir / "lor_plr_2021.geojson", raw_dir / "mss2025_plr.xlsx")
+    return areas.load_planning_areas(raw_dir / "lor_plr_2021.geojson", raw_dir / "population_plr.xlsx")
 
 
 @pytest.fixture

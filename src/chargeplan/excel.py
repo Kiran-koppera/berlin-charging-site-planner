@@ -47,8 +47,8 @@ ASSUMPTIONS = [
     ("ug", "Utilisation growth per year", 0.010, 0.015, 0.020, "pp", "0.0%", "Assumption: BEV fleet growth, site awareness"),
     ("ucap", "Utilisation ceiling", 0.12, 0.16, 0.20, "%", "0.0%", "Assumption: above ~20 % drivers queue"),
     ("avgkw", "Average power while charging", 80, 95, 110, "kW", "0", "Assumption: vehicle charging curves cap the average"),
-    ("price", "Charging price, net of VAT", 0.50, 0.55, 0.60, "€/kWh", "0.00",
-     "Assumption: equals €0.59-0.71 gross; check current ad-hoc HPC prices in Berlin"),
+    ("price", "Charging price, net of VAT", 0.50, 0.62, 0.70, "€/kWh", "0.00",
+     "Ladechef index Nov 2026: median ad-hoc DC price €0.74/kWh gross (= €0.62 net), middle 80 % €0.49-0.84"),
     ("thg", "GHG-quota revenue (THG-Quote)", 0.00, 0.02, 0.04, "€/kWh", "0.00", "Assumption: quota prices are volatile"),
     ("ecost", "Electricity cost incl. grid fees and levies", 0.27, 0.24, 0.21, "€/kWh", "0.00",
      "Assumption: commercial medium-voltage supply, net of VAT"),
@@ -228,7 +228,7 @@ def _readme(ws, summary: dict) -> None:
         ("", ""),
         ("Sources", "h"),
         ("Bundesnetzagentur Ladesäulenregister (CC BY 4.0); KBA FZ1 vehicle stock; LOR planning areas © Amt für", ""),
-        ("Statistik Berlin-Brandenburg (CC BY 3.0 DE); MSS 2025 population; Berlin traffic volumes 2023 (dl-de/zero-2-0);", ""),
+        ("Statistik Berlin-Brandenburg (CC BY 3.0 DE); residents 30 June 2026; Berlin traffic volumes 2023 (dl-de/zero-2-0);", ""),
         ("© OpenStreetMap contributors (ODbL).", ""),
     ]
     for i, (t, kind) in enumerate(lines, 1):
@@ -414,7 +414,7 @@ def sensitivity_tables(scenario: str = "Base") -> tuple[pd.DataFrame, pd.DataFra
     tor = pd.DataFrame(rows, columns=["Assumption", "NPV change at pessimistic value", "NPV change at optimistic value"])
     tor["swing"] = (tor.iloc[:, 1] - tor.iloc[:, 2]).abs()
     tor = tor.sort_values("swing", ascending=False).drop(columns="swing")
-    prices = [0.45, 0.50, 0.55, 0.60, 0.65]
+    prices = [0.50, 0.55, 0.62, 0.70, 0.75]
     mults = [0.6, 0.8, 1.0, 1.2, 1.4]
     avg = model(base).utilisation.mean()
     grid = pd.DataFrame([[model(dict(base, price=pr), m).npv for pr in prices] for m in mults],

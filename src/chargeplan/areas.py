@@ -35,7 +35,7 @@ def project_geom(g):
 
 
 def load_planning_areas(geojson: Path, population_xlsx: Path) -> pd.DataFrame:
-    """542 LOR planning areas (Planungsräume) with residents on 31 Dec 2024."""
+    """542 LOR planning areas (Planungsräume) with registered residents (see config.POPULATION_DATE)."""
     feats = json.loads(Path(geojson).read_text())["features"]
     rows = []
     for f in feats:
@@ -58,15 +58,27 @@ def load_planning_areas(geojson: Path, population_xlsx: Path) -> pd.DataFrame:
 
 
 def read_population(path: Path) -> pd.DataFrame:
+    """Residents per planning area.
+
+    Reads the Einwohnerregisterstatistik by LOR planning area (Amt für Statistik
+    Berlin-Brandenburg, report A I 16, sheet T2: four code columns, then the total), and falls
+    back to a simple layout with the 8-digit planning-area id in the first column.
+    """
     import openpyxl
 
-    ws = openpyxl.load_workbook(path, read_only=True, data_only=True).worksheets[0]
+    wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     out = []
-    for r in ws.iter_rows(values_only=True):
-        pid = str(r[0]).strip() if r[0] is not None else ""
-        if len(pid) == 8 and pid.isdigit() and isinstance(r[2], (int, float)):
-            out.append({"plr_id": pid, "residents": int(r[2])})
-    return pd.DataFrame(out)
+    if "T2" in wb.sheetnames:
+        for r in wb["T2"].iter_rows(values_only=True):
+            code = r[:4]
+            if all(isinstance(c, str) and c.isdigit() and len(c) == 2 for c in code) and isinstance(r[4], (int, float)):
+                out.append({"plr_id": "".join(code), "residents": int(r[4])})
+    else:
+        for r in wb.worksheets[0].iter_rows(values_only=True):
+            pid = str(r[0]).strip() if r[0] is not None else ""
+            if len(pid) == 8 and pid.isdigit() and isinstance(r[2], (int, float)):
+                out.append({"plr_id": pid, "residents": int(r[2])})
+    return pd.DataFrame(out).drop_duplicates("plr_id")
 
 
 def berlin_outline(areas: pd.DataFrame):

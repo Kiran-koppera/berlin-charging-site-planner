@@ -18,9 +18,9 @@ charge points. For Berlin: 5,104 devices → 12 quality checks ([data-quality.md
 
 ## 2. Demand per planning area
 
-Berlin's 542 LOR planning areas (median ~0.9 km²) with residents on 31 Dec 2024.
+Berlin's 542 LOR planning areas (median ~0.9 km²) with registered residents on 30 June 2026 (Einwohnerregisterstatistik).
 
-* **BEVs** = residents × Berlin BEVs per resident (48,888 / 3.90 million, KBA FZ1, 1 Jan 2026).
+* **BEVs** = residents × Berlin BEVs per resident (48,888 / 3.92 million; KBA FZ1, 1 Jan 2026).
 * **Daily energy per BEV** = 11,000 km/yr × 0.19 kWh/km / 365 ≈ 5.7 kWh.
 * **Public share**: 60 % in the inner city (street parking, few wallboxes), 35 % outside.
 * **Split**: 45 % of public energy is fast charging (DC/HPC), the rest AC.

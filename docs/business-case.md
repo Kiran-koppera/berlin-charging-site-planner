@@ -40,7 +40,7 @@ checked with olefile and olevba in the tests; open it in Excel and enable conten
 | Capex | €490k: 4 × €60k hardware + €140k grid connection + €90k civil works + €20k planning | planning assumptions |
 | Utilisation | 6 % in year 1, +1.5 pp a year, ceiling 16 % | share of 24 h charging |
 | Average charging power | 95 kW | vehicle charging curves |
-| Price | €0.55/kWh net (≈ €0.65 gross) | typical ad-hoc HPC price range |
+| Price | €0.62/kWh net (= €0.74 gross) | Ladechef price index, Nov 2026: median ad-hoc DC price €0.74/kWh, middle 80 % €0.49–0.84 |
 | Electricity | €0.24/kWh incl. grid fees and levies | commercial medium-voltage supply |
 | Fees | 8 % of revenue for payment and roaming | eMSP and card fees |
 | Fixed costs | grid capacity charge €50/kW-yr on 600 kW, maintenance €3k/point, backend €2.5k, lease €8k | escalate 2 % a year |
@@ -51,12 +51,14 @@ checked with olefile and olevba in the tests; open it in Excel and enable conten
 | Scenario | NPV | IRR | Payback |
 |---|---|---|---|
 | Pessimistic | −€880k | n/a | > 10 years |
-| Base | −€76k | 5.3 % | 9 years |
-| Optimistic | +€1,078k | 39.6 % | 4 years |
+| Base | +€104k | 11.3 % | 7 years |
+| Optimistic | +€1,498k | 49.2 % | 3 years |
 
-* At base assumptions a typical site needs **110 % of base-case utilisation** to earn 8 %.
-* Price, average charging power and first-year utilisation move NPV most (±€100–130k each).
-* With location-adjusted utilisation, **7 of the 25 shortlisted sites** have a positive NPV.
+* At base assumptions a typical site breaks even at **89 % of base-case utilisation**, so it clears
+  8 % with little headroom.
+* Price moves NPV most (−€309k at €0.50 net, +€206k at €0.70 net), then average charging power and
+  first-year utilisation (±€120–155k each).
+* With location-adjusted utilisation, **19 of the 25 shortlisted sites** have a positive NPV.
   The model therefore ranks sites by investment case, not only by score.
 
 All inputs are planning assumptions, not quotes. Before any decision, replace them with supplier

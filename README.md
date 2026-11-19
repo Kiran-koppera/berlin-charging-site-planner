@@ -45,15 +45,16 @@ site will pay back. This project answers that for Berlin with public data only:
 | Gaps | Fast-charging gaps are largest in Mitte, Neukölln and Friedrichshain-Kreuzberg; AC gaps in Pankow and Neukölln |
 | Competition | Unconcentrated market (HHI 917 for HPC points); the top HPC operator holds 21 % of HPC points |
 | Outlook | Base scenario: **~129,000 BEVs by 2030** need ~16,700 public points, **~1,780 a year** vs. 1,365 a year added in 2024–25 |
-| Business case | 4 × 300 kW site, €490k capex: Base NPV **−€76k** (IRR 5.3 %, payback 9 years); **7 of 25** shortlisted sites clear an 8 % hurdle |
+| Business case | 4 × 300 kW site, €490k capex, priced at the Nov 2026 median ad-hoc DC price: Base NPV **+€104k** (IRR 11.3 %, payback 7 years); **19 of 25** shortlisted sites clear an 8 % hurdle |
 | Validation | Competitor-entry model: **out-of-time AUC 0.61**; top fifth of sites 1.7× as likely to get a competitor HPC |
 | Data quality | 12 checks on the register: coordinates outside Berlin, wrong postcodes, point power above device power, duplicates |
 
 ### What the data says
 
-* **Location decides the investment.** At base-case assumptions a typical HPC site misses an 8 %
-  return by a small margin (it needs 110 % of base utilisation). Sites with heavy traffic, few
-  competitors nearby and a short-stop host clear it; the rest do not.
+* **Price and location decide the investment.** At today's median ad-hoc price (€0.74/kWh gross) a
+  typical HPC site clears an 8 % return with little headroom: it breaks even at 89 % of base-case
+  utilisation. Price is the biggest lever; at €0.50 net (contract and roaming prices) the same site
+  loses money. The 6 weakest shortlisted locations do not clear the hurdle.
 * **Operators build where the traffic is, not where residents lack chargers.** In the backtest,
   2025–26 HPC openings followed road traffic (AUC 0.58) and host type (0.57), while residential
   gaps had no predictive power (0.48). The inner-city AC gap is an open opportunity.
@@ -107,7 +108,7 @@ make install      # virtual environment + dependencies
 make data         # public data into data/raw (~75 MB)
 make run          # analysis, shortlist, forecast, workbook, dashboard -> output/
 make serve        # dashboard at http://localhost:8000
-make test         # 32 tests on synthetic data (no download needed)
+make test         # 33 tests on synthetic data (no download needed)
 ```
 
 ## Repository
@@ -141,5 +142,5 @@ docs/           methodology, system dynamics, data quality, business case, sourc
 ## Licence
 
 Code: MIT. Data: Bundesnetzagentur (CC BY 4.0); Kraftfahrt-Bundesamt; Amt für Statistik Berlin-Brandenburg
-(LOR, CC BY 3.0 DE); Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen (MSS 2025); Land Berlin
+(LOR, CC BY 3.0 DE); Amt für Statistik Berlin-Brandenburg (residents 30 June 2026, CC BY 3.0 DE); Land Berlin
 (traffic volumes, dl-de/zero-2-0); © OpenStreetMap contributors (ODbL). Details in [data-sources.md](docs/data-sources.md).

@@ -16,6 +16,7 @@ OUT = ROOT / "output"
 # Public data sources (all open licences, see docs/data-sources.md)
 # --------------------------------------------------------------------------------------------
 REGISTER_DATE = "2026-11-12"
+POPULATION_DATE = "2026-06-30"
 SOURCES = {
     "ladesaeulenregister.csv": (
         "https://data.bundesnetzagentur.de/Bundesnetzagentur/DE/Fachthemen/ElektrizitaetundGas/"
@@ -25,9 +26,8 @@ SOURCES = {
         "https://gdi.berlin.de/services/wfs/lor_2021?service=WFS&version=2.0.0&request=GetFeature"
         "&typeNames=lor_2021:a_lor_plr_2021&outputFormat=application/json&srsName=EPSG:4326"
     ),
-    "mss2025_plr.xlsx": (
-        "https://www.berlin.de/sen/stadt/_assets/stadtdaten/stadtwissen/monitoring-soziale-stadtentwicklung/"
-        "bericht-2025/21indexind_anteile_plr_mss2025.xlsx"
+    "population_plr.xlsx": (  # Einwohnerregisterstatistik Berlin, 30 June 2026, by LOR planning area
+        "https://download.statistik-berlin-brandenburg.de/fca0a030166493d0/1289b0921aa2/SB_A01-16-00_2026h01_BE.xlsx"
     ),
     "traffic_kfz_2023.geojson": (
         "https://gdi.berlin.de/services/wfs/verkehrsmengen_2023?service=WFS&version=2.0.0&request=GetFeature"

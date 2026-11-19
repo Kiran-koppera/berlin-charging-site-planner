@@ -54,7 +54,7 @@ def run(raw: Path = config.RAW, out: Path = config.OUT) -> dict:
     data = out / "site" / "data"
 
     # ---- inputs -------------------------------------------------------------------------
-    geo = areas.load_planning_areas(raw / "lor_plr_2021.geojson", raw / "mss2025_plr.xlsx")
+    geo = areas.load_planning_areas(raw / "lor_plr_2021.geojson", raw / "population_plr.xlsx")
     outline = areas.berlin_outline(geo)
     raw_reg = register.read_register(raw / "ladesaeulenregister.csv")
     checks = register.quality_checks(raw_reg, outline)
