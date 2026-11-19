@@ -5,144 +5,165 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Berlin Charging Site Planner</title>
 <meta name="description" content="Where should Berlin's next public EV chargers go? Location analysis, competition, demand forecast and HPC business case from public data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="theme-charge.css">
 </head>
 <body>
-<header class="hero">
-  <div class="wrap">
-    <p class="eyebrow">Network planning case study · public data · Berlin</p>
-    <h1>Where should Berlin's next fast chargers go?</h1>
-    <p class="lede">A location analysis of all <span data-k="points"></span> public charge points in Berlin: demand by planning area,
-      coverage, competitors, a demand forecast to 2030 and a business case for each shortlisted high-power charging (HPC) site.</p>
-    <p class="meta">Charging register of <span data-k="register_date"></span> · 542 planning areas · <span data-k="residents"></span> residents ·
-      <a href="https://github.com/Kiran-koppera/berlin-charging-site-planner">Code and method on GitHub</a></p>
+<nav class="menubar" aria-label="Sections">
+  <div class="wrap menubar-in">
+    <span class="brand"><i class="mark" aria-hidden="true"></i>Charging Site Planner</span>
+    <div class="links">
+      <a href="#map">Map</a><a href="#shortlist">Shortlist</a><a href="#competition">Competition</a><a href="#outlook">Outlook</a>
+      <a href="#business">Business case</a><a href="#validation">Validation</a><a href="#quality">Data quality</a>
+      <a href="#downloads">Downloads</a><a href="#method">Method</a>
+    </div>
+    <button class="theme" id="theme" type="button" aria-label="Switch light or dark mode">◐</button>
+    <a class="gh" href="https://github.com/Kiran-koppera/berlin-charging-site-planner">GitHub ↗</a>
   </div>
+</nav>
+<header class="hero wrap">
+  <div class="eyebrow">Network planning · EV charging · Berlin</div>
+  <h1>Berlin Charging Site Planner</h1>
+  <p class="sub">Where should Berlin's next public chargers go? Demand by planning area, coverage, competitors, a demand
+    forecast to 2030 and a business case for every shortlisted high-power charging (HPC) site, built from public data.</p>
+  <p class="snap" id="snap"></p>
 </header>
 
 <main class="wrap">
-  <section class="kpis" id="kpis"></section>
+  <section class="kpis" id="kpis" aria-label="Key figures"></section>
 
-  <section>
-    <h2>1 · The answer in brief</h2>
-    <div class="cards three" id="findings"></div>
+  <section class="card">
+    <div class="card-head"><div><h2>The answer in brief</h2><p>What a network planning team would take into an investment discussion.</p></div></div>
+    <div class="find" id="findings"></div>
   </section>
 
-  <section>
-    <h2>2 · Map: demand gaps, chargers and recommended sites</h2>
-    <p class="note">Planning areas are shaded by the <b>relative gap</b>: the daily energy an area would get if Berlin's
-      charging capacity were spread in proportion to demand, minus what its chargers can deliver, per km² so large forest and park areas do not dominate. Red = under-served.</p>
-    <div class="controls">
-      <label>Shade by <select id="layerSel">
-        <option value="gap_dc_km2">Fast-charging gap (kWh/day per km²)</option>
-        <option value="gap_ac_km2">AC (slow) charging gap (kWh/day per km²)</option>
-        <option value="points_per_1000">Charge points per 1,000 residents</option>
-        <option value="density">Residents per km²</option>
-      </select></label>
-      <label><input type="checkbox" id="showPts" checked> Existing charge points</label>
-      <label><input type="checkbox" id="showHpc" checked> HPC shortlist</label>
-      <label><input type="checkbox" id="showDc"> DC shortlist (supermarkets)</label>
+  <section class="grid-map" id="map">
+    <div class="card map-card">
+      <div class="card-head">
+        <div><h2>Demand gaps, chargers and recommended sites</h2>
+          <p>Planning areas are shaded by the <b>relative gap</b>: the energy an area would get if Berlin's charging capacity were spread
+            in proportion to demand, minus what its chargers deliver, per km².</p></div>
+        <div class="toggles">
+          <select id="layerSel" aria-label="Shade planning areas by">
+            <option value="gap_dc_km2">Fast-charging gap</option>
+            <option value="gap_ac_km2">AC charging gap</option>
+            <option value="points_per_1000">Points per 1,000 residents</option>
+            <option value="density">Residents per km²</option>
+          </select>
+          <label><input type="checkbox" id="showPts" checked> Chargers</label>
+          <label><input type="checkbox" id="showHpc" checked> HPC shortlist</label>
+          <label><input type="checkbox" id="showDc"> DC shortlist</label>
+        </div>
+      </div>
+      <div id="leaflet" role="region" aria-label="Map of Berlin"></div>
+      <div class="legend" id="legend"></div>
     </div>
-    <div id="map"></div>
-    <div class="legend" id="legend"></div>
+    <aside class="card side">
+      <div class="card-head"><div><h2>Recommended sites</h2><p>Ranked by opportunity score, at least 1.5 km apart. Click a site to show it on the map.</p></div></div>
+      <div class="filters">
+        <div class="seg" role="tablist"><button class="on" data-t="hpc" type="button">HPC · 25</button><button data-t="dc" type="button">DC · 15</button></div>
+        <label class="chk"><input type="checkbox" id="f-pos"> NPV &gt; 0 only</label>
+      </div>
+      <ol class="opp-list" id="sites"></ol>
+    </aside>
   </section>
 
-  <section>
-    <h2>3 · Shortlist</h2>
-    <div class="tabs"><button class="tab on" data-t="hpc">HPC: 25 sites</button><button class="tab" data-t="dc">DC 50–150 kW: 15 supermarkets</button></div>
-    <p class="note" id="shortNote"></p>
-    <div class="tablewrap"><table id="shortTbl"></table></div>
-    <p class="small">Score = 35 % charging gap of the area + 25 % traffic on the adjacent road + 25 % distance from existing HPC
-      + 15 % host fit (dwell time). Sites are at least 1.5 km apart. Forecourts of fuel brands that run their own HPC network
-      are excluded. Candidate hosts come from OpenStreetMap; no business has been contacted.
-      <a href="downloads/shortlist_hpc.csv">CSV</a></p>
+  <section class="card" id="shortlist">
+    <div class="card-head"><div><h2>Shortlist detail</h2><p id="shortNote"></p></div>
+      <a class="gh" href="downloads/shortlist_hpc.csv">CSV ↓</a></div>
+    <div class="table-wrap"><table id="shortTbl"></table></div>
+    <p class="note">Score = 35 % charging gap of the area + 25 % traffic on the adjacent road + 25 % distance from existing HPC + 15 % host fit
+      (dwell time). Forecourts of fuel brands with their own HPC network are excluded. Candidate hosts come from OpenStreetMap; no business has been contacted.</p>
   </section>
 
-  <section>
-    <h2>4 · Competitive landscape</h2>
-    <div class="cards two">
-      <div class="card"><h3>Installed power by operator (top 12)</h3><canvas id="opChart" height="300"></canvas></div>
-      <div class="card"><h3>Share of HPC points (≥ 150 kW)</h3><canvas id="hpcChart" height="300"></canvas>
-        <p class="small" id="hhiNote"></p></div>
+  <section class="grid-2" id="competition">
+    <div class="card">
+      <div class="card-head"><div><h2>Installed power by operator</h2><p>Top 12 operators in Berlin; MW of public charging.</p></div></div>
+      <div class="chart"><canvas id="opChart"></canvas></div>
     </div>
-    <div class="tablewrap"><table id="distTbl"></table></div>
-  </section>
-
-  <section>
-    <h2>5 · Demand outlook to 2030 (system-dynamics model)</h2>
-    <div class="cards two">
-      <div class="card"><h3>BEVs in Berlin and public charge points</h3><canvas id="fcChart" height="300"></canvas>
-        <p class="small">Dots: KBA vehicle stock and charge points in operation on 1 January. Lines: model, calibrated to 2023–2026.</p></div>
-      <div class="card"><h3>Causal loops in the model</h3>
-        <svg viewBox="0 0 460 300" class="cld" role="img" aria-label="Causal loop diagram">
-          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="ahp"/></marker></defs>
-          <g class="node"><rect x="20" y="120" width="120" height="40" rx="8"/><text x="80" y="145">BEV stock</text></g>
-          <g class="node"><rect x="320" y="120" width="120" height="40" rx="8"/><text x="380" y="145">Public points</text></g>
-          <g class="node"><rect x="170" y="20" width="120" height="40" rx="8"/><text x="230" y="45">Charging demand</text></g>
-          <g class="node"><rect x="170" y="220" width="120" height="40" rx="8"/><text x="230" y="245">Availability</text></g>
-          <g class="node"><rect x="20" y="230" width="120" height="40" rx="8" class="alt"/><text x="80" y="255">Car owners left</text></g>
-          <path d="M110,118 C140,70 160,50 168,45" marker-end="url(#ah)"/><text x="122" y="78" class="pol">+</text>
-          <path d="M292,45 C330,55 360,90 375,118" marker-end="url(#ah)"/><text x="345" y="78" class="pol">+</text>
-          <path d="M375,162 C360,210 320,235 292,240" marker-end="url(#ah)"/><text x="345" y="215" class="pol">+</text>
-          <path d="M168,240 C130,220 100,190 90,162" marker-end="url(#ah)"/><text x="118" y="205" class="pol">+</text>
-          <path d="M50,162 C40,190 40,210 50,228" marker-end="url(#ah)"/><text x="30" y="200" class="pol">−</text>
-          <path d="M110,230 C120,200 110,180 100,163" marker-end="url(#ah)"/><text x="122" y="185" class="pol">+</text>
-          <text x="230" y="150" class="loop">R1</text><text x="230" y="168" class="loopl">availability loop</text>
-          <text x="20" y="295" class="loopl">B1 saturation · B2 build-out gap closes over the build time</text>
-        </svg></div>
-    </div>
-    <div class="cards three" id="fcCards"></div>
-  </section>
-
-  <section>
-    <h2>6 · Business case for one 4 × 300 kW HPC site</h2>
-    <p class="note">Ten-year project view, net of VAT, before tax. All inputs are editable in the Excel workbook
-      (scenario dropdown, live formulas): <a href="downloads/hpc-business-case.xlsx"><b>download hpc-business-case.xlsx</b></a>.</p>
-    <div class="cards three" id="bcCards"></div>
-    <div class="cards two">
-      <div class="card"><h3>What moves the NPV (Base, each input at its pessimistic / optimistic value)</h3><canvas id="tornado" height="340"></canvas></div>
-      <div class="card"><h3>NPV by net price and average utilisation over 10 years (€k)</h3><div class="tablewrap"><table id="gridTbl" class="grid"></table></div>
-        <p class="small" id="siteNpvNote"></p></div>
+    <div class="card">
+      <div class="card-head"><div><h2>Share of HPC points (≥ 150 kW)</h2><p id="hhiNote"></p></div></div>
+      <div class="chart"><canvas id="hpcChart"></canvas></div>
     </div>
   </section>
 
-  <section>
-    <h2>7 · Does the model hold up? Backtest and competitor-entry model</h2>
-    <div class="cards two" id="btCards"></div>
+  <section class="card">
+    <div class="card-head"><div><h2>Districts</h2><p>Supply, coverage and relative gaps by district, sorted by fast-charging gap.</p></div></div>
+    <div class="table-wrap"><table id="distTbl"></table></div>
   </section>
 
-  <section>
-    <h2>8 · Data quality of the charging register</h2>
-    <p class="note">Every Berlin row passes 12 checks before it is used. Decisions are applied in code, so each run is reproducible.</p>
-    <div class="tablewrap"><table id="dqTbl"></table></div>
-  </section>
-
-  <section>
-    <h2>9 · Method, assumptions and limits</h2>
-    <div class="cards two">
-      <div class="card"><h3>Method</h3><ul>
-        <li><b>Supply:</b> Bundesnetzagentur charging register, cleaned and grouped into sites; AC &lt; 50 kW, DC 50–149 kW, HPC ≥ 150 kW.</li>
-        <li><b>Demand:</b> residents per planning area × BEVs per resident (KBA) × daily kWh × share of charging that must be public
-          (60 % inner city, 35 % outer city) + through traffic from 2023 traffic counts.</li>
-        <li><b>Coverage:</b> residents spread over a 250 m grid; covered if within 300 m of AC or 1.5 km of HPC.</li>
-        <li><b>Sites:</b> 4,800+ candidate hosts from OpenStreetMap scored and picked greedily with 1.5 km spacing.</li>
-        <li><b>Forecast:</b> stock-and-flow model (Euler, quarter-year step) with a reinforcing availability loop and balancing saturation
-          and build-out loops, calibrated to KBA data.</li>
-        <li><b>Validation:</b> out-of-time backtest and a logistic-regression model of where operators opened HPC.</li></ul></div>
-      <div class="card"><h3>Limits</h3><ul>
-        <li>Only devices that completed the register notification are included; real supply is somewhat larger.</li>
-        <li>Demand counts Berlin-registered cars; fleets and ride-hailing cars registered elsewhere add demand, so city-wide utilisation is understated. The relative gap is unaffected.</li>
-        <li>Population is spread evenly within each planning area; road counts cover the main network only.</li>
-        <li>No grid-capacity data: medium-voltage availability decides many sites and must be checked with the grid operator.</li>
-        <li>Costs and prices are planning assumptions with a stated basis, not supplier quotes.</li></ul></div>
+  <section class="grid-2" id="outlook">
+    <div class="card">
+      <div class="card-head"><div><h2>Demand outlook to 2030</h2><p>System-dynamics model calibrated to KBA registrations and the register, 2023–2026.</p></div></div>
+      <div class="chart"><canvas id="fcChart"></canvas></div>
+      <div class="chg" id="fcCards" style="margin-top:12px"></div>
     </div>
-    <p class="small">Sources: Bundesnetzagentur Ladesäulenregister (CC BY 4.0) · Kraftfahrt-Bundesamt FZ1 (2023–2026) ·
-      LOR planning areas © Amt für Statistik Berlin-Brandenburg (CC BY 3.0 DE) · population: Monitoring Soziale Stadtentwicklung 2025,
-      SenSBW · Verkehrsmengen 2023, Land Berlin (dl-de/zero-2-0) ·
-      © OpenStreetMap contributors (ODbL). Independent portfolio project; not affiliated with any charging operator.</p>
+    <div class="card">
+      <div class="card-head"><div><h2>Causal loops in the model</h2><p>Stocks: BEVs and public points. One reinforcing and two balancing loops.</p></div></div>
+      <svg viewBox="0 0 460 300" class="cld" role="img" aria-label="Causal loop diagram">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" class="ahp"/></marker></defs>
+        <g class="node"><rect x="20" y="120" width="120" height="40" rx="8"/><text x="80" y="145">BEV stock</text></g>
+        <g class="node"><rect x="320" y="120" width="120" height="40" rx="8"/><text x="380" y="145">Public points</text></g>
+        <g class="node"><rect x="170" y="20" width="120" height="40" rx="8"/><text x="230" y="45">Charging demand</text></g>
+        <g class="node"><rect x="170" y="220" width="120" height="40" rx="8"/><text x="230" y="245">Availability</text></g>
+        <g class="node"><rect x="20" y="230" width="120" height="40" rx="8" class="alt"/><text x="80" y="255">Car owners left</text></g>
+        <path d="M110,118 C140,70 160,50 168,45" marker-end="url(#ah)"/><text x="122" y="78" class="pol">+</text>
+        <path d="M292,45 C330,55 360,90 375,118" marker-end="url(#ah)"/><text x="345" y="78" class="pol">+</text>
+        <path d="M375,162 C360,210 320,235 292,240" marker-end="url(#ah)"/><text x="345" y="215" class="pol">+</text>
+        <path d="M168,240 C130,220 100,190 90,162" marker-end="url(#ah)"/><text x="118" y="205" class="pol">+</text>
+        <path d="M50,162 C40,190 40,210 50,228" marker-end="url(#ah)"/><text x="30" y="200" class="pol">−</text>
+        <path d="M110,230 C120,200 110,180 100,163" marker-end="url(#ah)"/><text x="122" y="185" class="pol">+</text>
+        <text x="230" y="150" class="loop">R1</text><text x="230" y="168" class="loopl">availability loop</text>
+        <text x="20" y="295" class="loopl foot">B1 saturation · B2 build-out gap closes over the build time</text>
+      </svg>
+    </div>
+  </section>
+
+  <section class="card" id="business">
+    <div class="card-head"><div><h2>Business case: one 4 × 300 kW HPC site</h2>
+      <p>Ten years, net of VAT, before tax. Every input is editable in the Excel workbook; the macro version runs all scenarios and a Goal Seek break-even.</p></div></div>
+    <div class="chg" id="bcCards"></div>
+    <div class="grid-2" style="margin-top:16px">
+      <div><h3 class="mini">What moves the NPV (Base; each input at its pessimistic / optimistic value)</h3><div class="chart tall"><canvas id="tornado"></canvas></div></div>
+      <div><h3 class="mini">NPV by net price and average utilisation over 10 years (€k)</h3><div class="table-wrap"><table id="gridTbl"></table></div>
+        <p class="note" id="siteNpvNote"></p></div>
+    </div>
+  </section>
+
+  <section class="grid-2" id="validation">
+    <div class="card" id="bt"></div>
+    <div class="card" id="em"></div>
+  </section>
+
+  <section class="card" id="quality">
+    <div class="card-head"><div><h2>Data quality of the charging register</h2><p id="q-sub"></p></div><span class="pill warn" id="q-pill"></span></div>
+    <ul class="checks" id="checks"></ul>
+  </section>
+
+  <section class="card" id="downloads">
+    <div class="card-head"><div><h2>Downloads</h2><p>Generated by the same pipeline that builds this page.</p></div></div>
+    <div class="dl-grid" id="dl"></div>
+  </section>
+
+  <section class="card method" id="method">
+    <h2>Method and limits</h2>
+    <div class="cols">
+      <div><h3>Data</h3><p>Bundesnetzagentur charging register (CC BY 4.0); KBA vehicle stock FZ1 2023–2026; LOR planning areas © Amt für Statistik
+        Berlin-Brandenburg (CC BY 3.0 DE); population from Monitoring Soziale Stadtentwicklung 2025; traffic volumes 2023, Land Berlin (dl-de/zero-2-0);
+        hosts © OpenStreetMap contributors (ODbL).</p></div>
+      <div><h3>Model</h3><p>Demand per planning area = residents × BEVs per resident × daily kWh × public share (60 % inner city, 35 % outer) plus through traffic.
+        Coverage on a 250 m population grid. Sites scored on gap, traffic, whitespace and host fit. Forecast: stock-and-flow model with quarter-year steps.
+        Validation: out-of-time backtest and a logistic-regression competitor-entry model.</p></div>
+      <div><h3>Limits</h3><p>Only devices that completed register notification are included. Demand counts Berlin-registered cars, so city-wide
+        utilisation is understated (the relative gap is not). No grid-capacity data. Costs are planning assumptions, not quotes.
+        Independent portfolio project; not affiliated with any charging operator.</p></div>
+    </div>
   </section>
 </main>
-<footer class="wrap small">Built by Kiran Koppera · <a href="https://github.com/Kiran-koppera/berlin-charging-site-planner">GitHub</a></footer>
+<footer class="wrap foot">Charging register © Bundesnetzagentur, CC BY 4.0 · LOR © Amt für Statistik Berlin-Brandenburg, CC BY 3.0 DE · Traffic © Land Berlin, dl-de/zero-2-0 · Map © OpenStreetMap contributors · Code MIT · Kiran Koppera</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>

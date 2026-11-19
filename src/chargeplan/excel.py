@@ -159,7 +159,8 @@ def ref(key: str) -> str:
     return f"Assumptions!$F${ROW0 + KEYS.index(key)}"
 
 
-def build_workbook(path: Path, shortlist: pd.DataFrame, summary: dict) -> None:
+def build_workbook(path: Path, shortlist: pd.DataFrame, summary: dict, xlsm: Path | None = None) -> None:
+    """Write the .xlsx and, if `xlsm` is given, a macro-enabled copy with the VBA macros."""
     wb = Workbook()
     _readme(wb.active, summary)
     _assumptions(wb.create_sheet("Assumptions"))
@@ -167,6 +168,40 @@ def build_workbook(path: Path, shortlist: pd.DataFrame, summary: dict) -> None:
     _sites(wb.create_sheet("Sites"), shortlist)
     _sensitivity(wb.create_sheet("Sensitivity"))
     wb.save(path)
+    if xlsm is None:
+        return
+    from . import vba
+
+    _macro_readme(wb["Read me"])
+    res = wb.create_sheet("Scenario results")
+    res["A1"] = "Scenario results"
+    res["A1"].font = Font(bold=True, size=13)
+    res["A2"] = "Press Ctrl+Shift+R (or Alt+F8 > RunAllScenarios) to fill this sheet with all three scenarios."
+    res.column_dimensions["A"].width = 90
+    wb.code_name = "ThisWorkbook"
+    codenames = []
+    for i, ws in enumerate(wb.worksheets, 1):
+        ws.sheet_properties.codeName = f"Sheet{i}"
+        codenames.append(f"Sheet{i}")
+    tmp = xlsm.with_suffix(".tmp.xlsx")
+    wb.save(tmp)
+    source = (Path(__file__).parent / "vba" / "ScenarioRunner.bas").read_text()
+    vba.make_xlsm(tmp, xlsm, vba.build_vba_project({"ScenarioRunner": source}, codenames))
+    tmp.unlink()
+
+
+def _macro_readme(ws) -> None:
+    r = ws.max_row + 2
+    rows = [("Macros (this .xlsm version)", "h"),
+            ("Enable content when Excel asks. The VBA code is in the ScenarioRunner module (Alt+F11 to view).", ""),
+            ("Ctrl+Shift+R  RunAllScenarios: runs Pessimistic, Base and Optimistic through the live model and writes", ""),
+            ("              NPV, IRR, payback, sites with NPV > 0 and every site's NPV to the 'Scenario results' sheet.", ""),
+            ("Ctrl+Shift+B  BreakEvenPrice: Goal Seek on the Cash flow NPV to find the net price where NPV = 0.", ""),
+            ("Both macros restore the inputs they change and only touch this workbook.", "")]
+    for i, (t, kind) in enumerate(rows):
+        c = ws.cell(row=r + i, column=1, value=t)
+        if kind == "h":
+            c.font = BOLD
 
 
 def _readme(ws, summary: dict) -> None:

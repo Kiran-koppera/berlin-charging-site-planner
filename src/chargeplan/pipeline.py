@@ -184,7 +184,7 @@ def run(raw: Path = config.RAW, out: Path = config.OUT) -> dict:
 
     xlsx = out / "site" / "downloads" / "hpc-business-case.xlsx"
     xlsx.parent.mkdir(parents=True, exist_ok=True)
-    excel.build_workbook(xlsx, hpc_list, summary)
+    excel.build_workbook(xlsx, hpc_list, summary, xlsm=xlsx.with_name("hpc-business-case-macros.xlsm"))
     for f in ("shortlist_hpc.csv", "planning_areas.csv", "operators.csv"):
         shutil.copy(out / f, xlsx.parent / f)
     web = config.ROOT / "site"

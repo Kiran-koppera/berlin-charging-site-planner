@@ -18,6 +18,21 @@ The Sensitivity sheet is filled by the Python twin of the model, because openpyx
 Excel what-if data tables. The tests recalculate the workbook formulas with the `formulas` library
 and check NPV, IRR, payback and per-site NPV against the Python model.
 
+## Macro version
+
+`hpc-business-case-macros.xlsm` adds a VBA module, [`ScenarioRunner.bas`](../src/chargeplan/vba/ScenarioRunner.bas):
+
+* **RunAllScenarios** (Ctrl+Shift+R): loops the scenario dropdown through all three scenarios with
+  `Application.CalculateFull`, collects one-site NPV, IRR and payback plus every shortlisted site's
+  NPV, writes a formatted *Scenario results* sheet and restores the original scenario, also on error.
+* **BreakEvenPrice** (Ctrl+Shift+B): finds the price input of the selected scenario with
+  `Application.Match`, runs `GoalSeek` on the NPV cell to reach zero, reports the break-even price
+  and restores the input.
+
+The module contains source only; Excel compiles it on first open. Because there is no Excel in
+the build environment, the VBA project is written by [`vba.py`](../src/chargeplan/vba.py) and
+checked with olefile and olevba in the tests; open it in Excel and enable content to run it.
+
 ## Key assumptions (Base)
 
 | Input | Base | Basis |

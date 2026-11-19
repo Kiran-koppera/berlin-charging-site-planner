@@ -8,10 +8,10 @@ out-of-time validated competitor-entry model and an Excel business case for ever
 
 [![CI](https://github.com/Kiran-koppera/berlin-charging-site-planner/actions/workflows/ci.yml/badge.svg)](https://github.com/Kiran-koppera/berlin-charging-site-planner/actions/workflows/ci.yml)
 [![Deploy](https://github.com/Kiran-koppera/berlin-charging-site-planner/actions/workflows/deploy.yml/badge.svg)](https://github.com/Kiran-koppera/berlin-charging-site-planner/actions/workflows/deploy.yml)
-![Coverage 92%](https://img.shields.io/badge/coverage-92%25-0f8b8d)
+![Coverage 93%](https://img.shields.io/badge/coverage-93%25-0f8b8d)
 ![Python](https://img.shields.io/badge/python-3.9%2B-1e3a5f)
 
-### [▶ Live dashboard](https://kiran-koppera.github.io/berlin-charging-site-planner/) · [Excel business case](https://kiran-koppera.github.io/berlin-charging-site-planner/downloads/hpc-business-case.xlsx) · [Method](docs/methodology.md) · [System dynamics](docs/system-dynamics.md) · [Data quality](docs/data-quality.md)
+### [▶ Live dashboard](https://kiran-koppera.github.io/berlin-charging-site-planner/) · [Excel business case](https://kiran-koppera.github.io/berlin-charging-site-planner/downloads/hpc-business-case.xlsx) · [with VBA macros](https://kiran-koppera.github.io/berlin-charging-site-planner/downloads/hpc-business-case-macros.xlsm) · [Method](docs/methodology.md) · [System dynamics](docs/system-dynamics.md) · [Data quality](docs/data-quality.md)
 
 <img src="docs/images/dashboard.png" alt="Map of Berlin planning areas shaded by fast-charging gap, with existing chargers and numbered recommended sites" width="900">
 
@@ -86,6 +86,18 @@ a scenario dropdown (Pessimistic / Base / Optimistic) drives every input through
 score scales utilisation and its own cash flow, NPV and IRR are live formulas; a tornado and a
 price × utilisation grid. Tests recalculate the workbook formulas and check they equal the Python model.
 
+**Macro version** ([`hpc-business-case-macros.xlsm`](https://kiran-koppera.github.io/berlin-charging-site-planner/downloads/hpc-business-case-macros.xlsm),
+source: [`ScenarioRunner.bas`](src/chargeplan/vba/ScenarioRunner.bas)):
+
+| Macro | Shortcut | What it does |
+|---|---|---|
+| `RunAllScenarios` | Ctrl+Shift+R | Switches the scenario dropdown through Pessimistic, Base and Optimistic, recalculates, and writes NPV, IRR, payback, sites with NPV > 0 and every site's NPV to a *Scenario results* sheet; restores the original scenario |
+| `BreakEvenPrice` | Ctrl+Shift+B | Goal Seek on the cash-flow NPV to find the net price at which one site breaks even, then restores the input |
+
+openpyxl cannot write VBA, so [`vba.py`](src/chargeplan/vba.py) builds the VBA project itself from
+Microsoft's published file-format specifications ([MS-OVBA] streams, compression and encoding;
+[MS-CFB] container). Tests check the result with independent readers (olefile, olevba).
+
 ## Quick start
 
 ```bash
@@ -95,7 +107,7 @@ make install      # virtual environment + dependencies
 make data         # public data into data/raw (~75 MB)
 make run          # analysis, shortlist, forecast, workbook, dashboard -> output/
 make serve        # dashboard at http://localhost:8000
-make test         # 20 tests on synthetic data (no download needed)
+make test         # 32 tests on synthetic data (no download needed)
 ```
 
 ## Repository
@@ -109,6 +121,8 @@ src/chargeplan/
   ml.py         competitor-entry model (logistic regression, out-of-time validation)
   forecast.py   system-dynamics model of BEVs and public points
   excel.py      business case workbook and its Python twin
+  vba.py        VBA project writer ([MS-OVBA], [MS-CFB]) and .xlsm packaging
+  vba/          ScenarioRunner.bas: the Excel macros
   pipeline.py   end-to-end run
 site/           dashboard (HTML, CSS, JS)
 tests/          pytest on synthetic inputs

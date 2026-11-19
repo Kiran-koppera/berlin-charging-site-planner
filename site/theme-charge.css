@@ -1,0 +1,132 @@
+/* Electric theme for the charging site planner. Layered on style.css (same structure as the
+   network planner's green theme): crisp white cards on a cool pale field, teal as the brand,
+   violet for high-power charging. A "charge bar" motif marks the hero, and plug markers mark
+   the card headers. */
+:root {
+  --bg: #f1f5f7;
+  --bloom-1: rgba(15, 139, 141, .10); --bloom-2: rgba(255, 255, 255, .9); --bloom-3: rgba(108, 75, 196, .07);
+  --glass: #ffffff; --glass-strong: #ffffff;
+  --edge: #dde6ea; --hair: #e1e9ed;
+  --shadow: 0 1px 2px rgba(14, 33, 48, .05), 0 6px 18px rgba(14, 33, 48, .06);
+  --surface: #ffffff; --ink: #14212b; --ink-2: #4a5b66; --muted: #7b8a94; --line: #e7eef1;
+  --brand: #0b6e70; --brand-2: #0f8b8d; --accent: #6c4bc4;
+  --ac: #3a86c8; --dc: #0f8b8d; --hpc: #6c4bc4;
+  --gap-hi: #c0392b; --gap-lo: #12807d;
+  --l1: #b9e2e2; --l2: #3fa9aa; --l3: #0b5f61; --uns: #c2410c;
+  --good: #1d7a4a; --warn: #b45309; --bad: #b91c1c;
+  --map-filter: grayscale(1) brightness(1.05) contrast(.88);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1417;
+  --bloom-1: rgba(45, 212, 191, .09); --bloom-2: rgba(14, 20, 23, 1); --bloom-3: rgba(139, 109, 230, .09);
+  --glass: #151d22; --glass-strong: #1a242a;
+  --edge: #24313a; --hair: #26333c;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 22px rgba(0, 0, 0, .3);
+  --surface: #151d22; --ink: #e8f0f3; --ink-2: #b3c2ca; --muted: #83939c; --line: #212c33;
+  --brand: #2dd4bf; --brand-2: #5eead4; --accent: #a78bfa;
+  --ac: #7cb8ea; --dc: #2dd4bf; --hpc: #a78bfa;
+  --gap-hi: #f87171; --gap-lo: #2dd4bf;
+  --l1: #24484a; --l2: #3fb8b0; --l3: #9ff0e4; --uns: #fdba74;
+  --good: #4ade80; --warn: #fbbf24; --bad: #f87171;
+  --map-filter: grayscale(1) invert(1) brightness(.72) contrast(.92);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1417;
+  --bloom-1: rgba(45, 212, 191, .09); --bloom-2: rgba(14, 20, 23, 1); --bloom-3: rgba(139, 109, 230, .09);
+  --glass: #151d22; --glass-strong: #1a242a;
+  --edge: #24313a; --hair: #26333c;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 22px rgba(0, 0, 0, .3);
+  --surface: #151d22; --ink: #e8f0f3; --ink-2: #b3c2ca; --muted: #83939c; --line: #212c33;
+  --brand: #2dd4bf; --brand-2: #5eead4; --accent: #a78bfa;
+  --ac: #7cb8ea; --dc: #2dd4bf; --hpc: #a78bfa;
+  --gap-hi: #f87171; --gap-lo: #2dd4bf;
+  --l1: #24484a; --l2: #3fb8b0; --l3: #9ff0e4; --uns: #fdba74;
+  --good: #4ade80; --warn: #fbbf24; --bad: #f87171;
+  --map-filter: grayscale(1) invert(1) brightness(.72) contrast(.92);
+  color-scheme: dark; }
+
+/* crisp cards instead of frosted glass */
+.card, .kpi { -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: var(--shadow); border-radius: 14px; }
+.lights { display: none; }
+
+/* menu bar: solid, with a teal stripe */
+.menubar { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 0; box-shadow: 0 1px 0 var(--hair), 0 3px 0 -1px var(--brand-2); }
+.mark { background: var(--brand-2); border-radius: 6px; box-shadow: none; }
+.mark::after { content: ""; position: absolute; inset: 3px 6px; border: 0; border-radius: 0;
+  background: #fff; clip-path: polygon(60% 0, 10% 58%, 45% 58%, 35% 100%, 90% 40%, 55% 40%); }
+.links a:hover { background: color-mix(in srgb, var(--brand-2) 10%, transparent); color: var(--brand); }
+.gh { background: var(--brand); color: #fff; border-color: var(--brand); }
+:root:not([data-theme="light"]) .gh { color: #fff; }
+.theme { font: inherit; font-size: 13px; background: transparent; border: 1px solid var(--hair); color: var(--ink-2);
+  border-radius: 8px; padding: 4px 9px; cursor: pointer; }
+
+/* hero with a charge-bar motif */
+.hero { position: relative; padding-block: 44px 18px; }
+.hero::after { content: ""; display: block; height: 10px; margin-top: 22px; max-width: 520px; border-radius: 5px;
+  background: linear-gradient(90deg, var(--brand-2) 0 72%, transparent 72%) 0 0 / 100% 100% no-repeat,
+              repeating-linear-gradient(90deg, color-mix(in srgb, var(--brand-2) 22%, transparent) 0 26px, transparent 26px 30px);
+  opacity: .9; }
+.eyebrow { color: var(--brand); }
+.snap { background: color-mix(in srgb, var(--brand-2) 8%, var(--surface)); border-color: color-mix(in srgb, var(--brand-2) 25%, transparent);
+  box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* KPI tiles: teal top rule; HPC tile in violet */
+.kpi { border-top: 3px solid var(--brand-2); }
+.kpi.v2 { border-top-color: var(--accent); }
+.kpi .v { color: var(--ink); }
+
+/* card headers carry a small plug marker */
+.card-head h2::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 3px;
+  border: 2.5px solid var(--brand-2); margin-right: 9px; vertical-align: 1px; }
+
+.toggles label, .chg div, .dl { background: var(--surface); }
+.opp.on { background: color-mix(in srgb, var(--brand-2) 8%, var(--surface)); box-shadow: inset 3px 0 0 var(--brand-2); }
+.dl .ext { background: var(--brand); }
+.dl .ext.x { background: #1d6f42; } .dl .ext.m { background: var(--accent); }
+.bar { background: linear-gradient(90deg, var(--l1), var(--brand-2)); }
+th { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.leaflet-bar, .leaflet-control-attribution { background: var(--surface) !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.leaflet-popup-content-wrapper, .leaflet-tooltip { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* charging-specific pieces */
+.seg { display: inline-flex; border: 1px solid var(--hair); border-radius: 9px; overflow: hidden; }
+.seg button { font: inherit; font-size: 12.5px; border: 0; background: var(--surface); color: var(--ink-2); padding: 5px 11px; cursor: pointer; }
+.seg button.on { background: var(--brand); color: #fff; }
+.legend .sw { width: 14px; height: 10px; border-radius: 3px; }
+.legend .pt { width: 9px; height: 9px; border-radius: 50%; }
+.num { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--accent); color: #fff; font: 700 11px/1 var(--f); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+.num.dc { background: var(--brand-2); }
+.parts { display: inline-flex; width: 96px; height: 7px; border-radius: 4px; overflow: hidden; background: var(--line); vertical-align: middle; }
+.parts i { display: block; height: 100%; }
+.tag.hot { background: color-mix(in srgb, var(--accent) 13%, transparent); color: var(--accent); }
+.tag.calm { background: color-mix(in srgb, var(--brand-2) 13%, transparent); color: var(--brand); }
+.tag.npv-pos { background: color-mix(in srgb, var(--good) 13%, transparent); color: var(--good); }
+.tag.npv-neg { background: color-mix(in srgb, var(--bad) 11%, transparent); color: var(--bad); }
+.pos { color: var(--good); font-weight: 600; } .neg { color: var(--bad); font-weight: 600; }
+td.wrap { white-space: normal; min-width: 260px; color: var(--ink-2); font-size: 12.5px; }
+.chart { position: relative; height: 300px; }
+.chart.tall { height: 360px; }
+.find { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.find div { border: 1px solid var(--hair); border-radius: 12px; padding: 14px 16px; background: var(--surface); }
+.find div:nth-child(1) { border-top: 3px solid var(--brand-2); } .find div:nth-child(2) { border-top: 3px solid var(--accent); }
+.find div:nth-child(3) { border-top: 3px solid var(--ink-2); }
+.find h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-family: var(--mono); }
+.find b { display: block; font: 700 22px/1.2 var(--f-display); margin: 6px 0 4px; letter-spacing: -.01em; }
+.find p { margin: 0; color: var(--ink-2); font-size: 13px; }
+@media (max-width: 900px) { .find { grid-template-columns: 1fr; } }
+.cld path { fill: none; stroke: var(--muted); stroke-width: 1.6; }
+.cld .ahp { fill: var(--muted); stroke: none; }
+.cld .node rect { fill: color-mix(in srgb, var(--brand-2) 9%, var(--surface)); stroke: var(--brand); stroke-width: 1.2; }
+.cld .node rect.alt { fill: color-mix(in srgb, var(--accent) 9%, var(--surface)); stroke: var(--accent); }
+.cld .node text { font: 600 12.5px var(--f); text-anchor: middle; fill: var(--ink); }
+.cld .pol { font: 700 15px var(--f); fill: var(--accent); }
+.cld .loop { font: 700 20px var(--f); text-anchor: middle; fill: var(--brand-2); }
+.cld .loopl { font: 11.5px var(--f); text-anchor: middle; fill: var(--muted); }
+.cld .foot { text-anchor: start; }
+.mini-t { width: 100%; }
+.mini-t td, .mini-t th { white-space: normal; }
+#bcCards { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 900px) { #bcCards { grid-template-columns: 1fr 1fr; } }
+.grid-2 > *, .find > * { min-width: 0; }
